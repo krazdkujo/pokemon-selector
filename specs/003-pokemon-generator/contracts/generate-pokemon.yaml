@@ -1,0 +1,313 @@
+openapi: 3.0.3
+info:
+  title: Pokemon Generator API
+  version: 1.0.0
+  description: API for generating Pokemon with random or specific selections
+
+paths:
+  /api/generate-pokemon:
+    post:
+      summary: Generate a Pokemon
+      description: |
+        Generates a Pokemon with selected moves, ability, and nature.
+        Can generate random Pokemon or specific Pokemon by ID.
+      operationId: generatePokemon
+      tags:
+        - Pokemon
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pokemonId:
+                  type: string
+                  description: Optional Pokemon ID for specific generation (e.g., "bulbasaur")
+                  example: "bulbasaur"
+                level:
+                  type: integer
+                  minimum: 1
+                  maximum: 20
+                  default: 5
+                  description: Level for move selection (default 5)
+                  example: 5
+                random:
+                  type: boolean
+                  default: true
+                  description: Generate random Pokemon (ignored if pokemonId provided)
+            examples:
+              random:
+                summary: Generate random Pokemon
+                value:
+                  random: true
+              specific:
+                summary: Generate specific Pokemon
+                value:
+                  pokemonId: "pikachu"
+                  level: 10
+      responses:
+        '200':
+          description: Successfully generated Pokemon
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+              examples:
+                success:
+                  summary: Successful generation
+                  value:
+                    success: true
+                    pokemon:
+                      id: "bulbasaur"
+                      name: "Bulbasaur"
+                      number: 1
+                      types: ["grass", "poison"]
+                      size: "tiny"
+                      description: "The Seed Pokemon..."
+                      spriteUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+                      level: 5
+                      baseStats:
+                        str: 13
+                        dex: 12
+                        con: 12
+                        int: 6
+                        wis: 10
+                        cha: 10
+                        hp: 17
+                        ac: 13
+                      modifiedStats:
+                        str: 14
+                        dex: 12
+                        con: 12
+                        int: 6
+                        wis: 10
+                        cha: 9
+                        hp: 17
+                        ac: 13
+                      nature:
+                        id: "adamant"
+                        name: "Adamant"
+                        effect: "+1 STR, -1 CHA"
+                      ability:
+                        id: "overgrow"
+                        name: "Overgrow"
+                        description: "When HP is low..."
+                        isHidden: false
+                      moves:
+                        - id: "tackle"
+                          name: "Tackle"
+                          type: "normal"
+                          description: "Basic attack"
+                          pp: 35
+                          range: "melee"
+                      evolution:
+                        evolvesTo: "ivysaur"
+                        evolvesToName: "Ivysaur"
+                        condition: "Level 6"
+                      speed:
+                        - type: "walking"
+                          value: 30
+                      skills: ["athletics", "nature"]
+                      savingThrows: ["str"]
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Invalid level parameter. Must be between 1 and 20."
+        '401':
+          description: Unauthorized - user not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Authentication required"
+        '404':
+          description: Pokemon not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Pokemon not found. Please try a different name."
+        '500':
+          description: Server error - data unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Pokemon data unavailable. Please try again later."
+
+components:
+  schemas:
+    GenerateResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+        pokemon:
+          $ref: '#/components/schemas/GeneratedPokemon'
+        error:
+          type: string
+
+    GeneratedPokemon:
+      type: object
+      required:
+        - id
+        - name
+        - number
+        - types
+        - baseStats
+        - modifiedStats
+        - nature
+        - ability
+        - moves
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        number:
+          type: integer
+        types:
+          type: array
+          items:
+            type: string
+        size:
+          type: string
+        description:
+          type: string
+        spriteUrl:
+          type: string
+          format: uri
+        level:
+          type: integer
+        baseStats:
+          $ref: '#/components/schemas/Stats'
+        modifiedStats:
+          $ref: '#/components/schemas/Stats'
+        nature:
+          $ref: '#/components/schemas/SelectedNature'
+        ability:
+          $ref: '#/components/schemas/SelectedAbility'
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectedMove'
+          minItems: 1
+          maxItems: 4
+        evolution:
+          $ref: '#/components/schemas/EvolutionInfo'
+        speed:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              value:
+                type: integer
+        skills:
+          type: array
+          items:
+            type: string
+        savingThrows:
+          type: array
+          items:
+            type: string
+
+    Stats:
+      type: object
+      properties:
+        str:
+          type: integer
+        dex:
+          type: integer
+        con:
+          type: integer
+        int:
+          type: integer
+        wis:
+          type: integer
+        cha:
+          type: integer
+        hp:
+          type: integer
+        ac:
+          type: integer
+
+    SelectedNature:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        effect:
+          type: string
+
+    SelectedAbility:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        isHidden:
+          type: boolean
+
+    SelectedMove:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        pp:
+          type: integer
+        range:
+          type: string
+
+    EvolutionInfo:
+      type: object
+      nullable: true
+      properties:
+        evolvesTo:
+          type: string
+        evolvesToName:
+          type: string
+        evolvesFrom:
+          type: string
+        evolvesFromName:
+          type: string
+        condition:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: string

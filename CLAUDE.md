@@ -1,4 +1,4 @@
-# pokemon selector Development Guidelines
+﻿# pokemon selector Development Guidelines
 
 Auto-generated from all feature plans. Last updated: 2025-12-30
 
@@ -7,6 +7,8 @@ Auto-generated from all feature plans. Last updated: 2025-12-30
 - Supabase PostgreSQL (connection only), Local JSON files (Source folder) (001-nextjs-supabase-setup)
 - JavaScript (ES6+), Node.js 18+ + Next.js 14, React 18, @supabase/supabase-js ^2.89.0 (002-auth-login)
 - Supabase PostgreSQL (user accounts managed by Supabase Auth) (002-auth-login)
+- JavaScript (ES6+), Node.js 18+ + Next.js 14.x, React 18.x, @supabase/supabase-js ^2.89.0 (003-pokemon-generator)
+- Local JSON files in `Source/` folder (read-only), Supabase PostgreSQL (future user collection storage) (003-pokemon-generator)
 
 ## Project Structure
 
@@ -34,6 +36,7 @@ npm run start    # Start production server
 - API routes: kebab-case (e.g., generate-pokemon.js)
 
 ## Recent Changes
+- 003-pokemon-generator: Added JavaScript (ES6+), Node.js 18+ + Next.js 14.x, React 18.x, @supabase/supabase-js ^2.89.0
 - 002-auth-login: Added authentication with Supabase Auth (signup, login, logout, session management)
 - 001-nextjs-supabase-setup: Initial Next.js 14 project with Supabase integration and Pokemon data utilities
 

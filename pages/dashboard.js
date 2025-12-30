@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { useAuth } from '../lib/authContext'
 import ProtectedRoute from '../components/ProtectedRoute'
+import PokemonSelector from '../components/PokemonSelector'
 
 export default function DashboardPage() {
   const { user, signOut } = useAuth()
@@ -31,11 +32,7 @@ export default function DashboardPage() {
         </header>
 
         <section className="dashboard-content">
-          <div className="welcome-card">
-            <h2>Welcome!</h2>
-            <p>You are logged in as <strong>{user?.email}</strong></p>
-            <p>Pokemon selection features coming soon...</p>
-          </div>
+          <PokemonSelector />
         </section>
       </main>
     </ProtectedRoute>
