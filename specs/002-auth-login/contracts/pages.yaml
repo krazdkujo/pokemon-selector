@@ -1,0 +1,102 @@
+# Pages Contract
+# Defines the page structure and routing behavior
+# Location: pages/*.js
+
+name: AuthPages
+type: next-pages
+version: 1.0.0
+
+description: |
+  Page components for authentication flow including login, dashboard,
+  and updated index page with auth-aware redirects.
+
+pages:
+  # Login Page
+  login:
+    path: /login
+    file: pages/login.js
+    authentication: public
+    description: Login and signup forms for authentication
+
+    components:
+      - AuthTabs (tab switcher)
+      - LoginForm (login form)
+      - SignupForm (signup form)
+
+    behavior:
+      authenticated_user:
+        condition: "user !== null"
+        action: "Redirect to /dashboard"
+        description: Logged-in users should not see login page
+
+      unauthenticated_user:
+        condition: "user === null"
+        action: Render login/signup forms
+        description: Show authentication options
+
+    state:
+      activeTab:
+        type: "'login' | 'signup'"
+        default: "'login'"
+        description: Which form is currently displayed
+
+  # Dashboard Page
+  dashboard:
+    path: /dashboard
+    file: pages/dashboard.js
+    authentication: protected
+    description: Main application dashboard for authenticated users
+
+    components:
+      - ProtectedRoute (wrapper)
+      - Dashboard content
+      - Logout button
+
+    behavior:
+      unauthenticated_user:
+        condition: "user === null"
+        action: "Redirect to /login (via ProtectedRoute)"
+        description: Protected route handles redirect
+
+    displays:
+      - User email as identity confirmation (FR-013)
+      - Logout button
+      - Placeholder for future Pokemon features
+
+  # Index Page (Updated)
+  index:
+    path: /
+    file: pages/index.js
+    authentication: redirect
+    description: Landing page that redirects based on auth status
+
+    behavior:
+      loading:
+        condition: "loading === true"
+        action: Show loading spinner
+        description: Wait for auth check to complete
+
+      authenticated_user:
+        condition: "user !== null"
+        action: "Redirect to /dashboard"
+        description: Send logged-in users to dashboard
+
+      unauthenticated_user:
+        condition: "user === null"
+        action: "Redirect to /login"
+        description: Send guests to login page
+
+# Route Protection Summary
+route_protection:
+  public_routes:
+    - /login
+  protected_routes:
+    - /dashboard
+  redirect_routes:
+    - / (redirects based on auth state)
+
+# Success Criteria Mapping
+success_criteria:
+  SC-005:
+    requirement: "Protected route redirects occur within 1 second"
+    implementation: "Client-side redirect via useEffect + router.replace()"

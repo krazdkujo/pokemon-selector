@@ -1,0 +1,62 @@
+# Protected Route Contract
+# Defines the interface for route protection component
+# Location: components/ProtectedRoute.jsx
+
+name: ProtectedRoute
+type: react-component
+version: 1.0.0
+
+description: |
+  Higher-Order Component that protects routes from unauthenticated access.
+  Redirects to login page if user is not authenticated.
+
+# Component Props
+props:
+  children:
+    type: ReactNode
+    required: true
+    description: Child components to render when authenticated
+
+# Behavior
+behavior:
+  loading_state:
+    condition: "loading === true"
+    action: Render LoadingSpinner component
+    description: Show loading state while checking authentication
+
+  unauthenticated:
+    condition: "loading === false && user === null"
+    action: "Redirect to /login via router.replace()"
+    description: Redirect unauthenticated users to login page
+
+  authenticated:
+    condition: "loading === false && user !== null"
+    action: Render children
+    description: Allow access to protected content
+
+# Usage
+usage: |
+  // In a protected page (e.g., pages/dashboard.js)
+  import ProtectedRoute from '../components/ProtectedRoute'
+
+  export default function DashboardPage() {
+    return (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    )
+  }
+
+# Dependencies
+dependencies:
+  - lib/authContext.js (useAuth hook)
+  - next/router (useRouter)
+  - components/LoadingSpinner.jsx
+
+# Redirect Behavior
+redirects:
+  unauthenticated_to_login:
+    from: Any protected route
+    to: /login
+    method: router.replace()
+    reason: User not logged in

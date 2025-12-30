@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: Pokemon Selector API - Health Check
+  description: Health check endpoint for verifying Supabase connectivity and system status
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Vercel Serverless Functions
+
+paths:
+  /health:
+    get:
+      summary: System health check
+      description: |
+        Returns the health status of the application including Supabase connectivity.
+        Used for deployment verification and monitoring.
+      operationId: getHealth
+      tags:
+        - System
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                timestamp: "2025-12-30T12:00:00.000Z"
+                supabase:
+                  connected: true
+                  latency: 45
+                source:
+                  available: true
+                  entityCounts:
+                    pokemon: 1142
+                    moves: 800
+                    abilities: 328
+        '503':
+          description: System is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: unhealthy
+                timestamp: "2025-12-30T12:00:00.000Z"
+                supabase:
+                  connected: false
+                  error: "Connection timeout"
+                source:
+                  available: true
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy, degraded]
+          description: Overall system health status
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of health check
+        supabase:
+          type: object
+          properties:
+            connected:
+              type: boolean
+              description: Whether Supabase connection is active
+            latency:
+              type: integer
+              description: Connection latency in milliseconds
+            error:
+              type: string
+              description: Error message if connection failed
+        source:
+          type: object
+          properties:
+            available:
+              type: boolean
+              description: Whether Source folder data is accessible
+            entityCounts:
+              type: object
+              description: Counts of each entity type from metadata
+              additionalProperties:
+                type: integer

@@ -1,50 +1,145 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+  SYNC IMPACT REPORT
+  ==================
+  Version change: N/A (initial) -> 1.0.0
+
+  Modified principles: N/A (initial creation)
+
+  Added sections:
+  - Core Principles (5 principles)
+  - Technology Stack (new section)
+  - Development Workflow (new section)
+  - Governance
+
+  Removed sections: N/A
+
+  Templates requiring updates:
+  - .specify/templates/plan-template.md: OK (no constitution-specific updates needed)
+  - .specify/templates/spec-template.md: OK (no constitution-specific updates needed)
+  - .specify/templates/tasks-template.md: OK (no constitution-specific updates needed)
+  - .specify/templates/checklist-template.md: OK (no constitution-specific updates needed)
+  - .specify/templates/agent-file-template.md: OK (no constitution-specific updates needed)
+
+  Follow-up TODOs: None
+-->
+
+# Pokemon Battle Website Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Source Data Authority
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+All Pokemon-related data (species, moves, abilities, natures, items, evolutions, classes, feats, TMs, rules) MUST be read from the `Source/` folder JSON files. Implementation rules:
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- NEVER hardcode Pokemon stats, moves, abilities, or any game data in application code
+- Treat Source folder data as read-only; application code MUST NOT modify these files
+- Validate JSON data structure before consumption to handle missing or malformed data gracefully
+- Load data via utility functions in `lib/pokemon-data.js`, never inline file reads
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+**Rationale**: Centralizing game data in the Source folder ensures consistency, simplifies updates, and prevents data drift between hardcoded values and source-of-truth files.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### II. Microservices Architecture
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+All backend logic MUST be implemented as Vercel Serverless Functions in `/pages/api/`. Each microservice MUST:
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- Focus on a single responsibility (e.g., `generate-pokemon.js` handles generation only)
+- Return JSON responses with consistent error structures
+- Be stateless; persist state via Supabase, not in-memory
+- Implement input validation and rate limiting
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**Rationale**: Lightweight, focused serverless functions scale automatically, reduce cold-start times, and isolate failures to specific endpoints.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### III. Security First
+
+Security constraints are NON-NEGOTIABLE:
+
+- NEVER expose `SUPABASE_SERVICE_KEY` in frontend code; use only in serverless functions
+- `NEXT_PUBLIC_*` environment variables are the ONLY credentials permitted in client-side code
+- All API inputs MUST be validated and sanitized before processing
+- Implement Supabase Row Level Security (RLS) policies for all database tables
+- Rate limit all public-facing API endpoints
+- Never commit `.env` files or credentials to version control
+
+**Rationale**: Pokemon applications attract automated abuse; defense-in-depth prevents data breaches and service disruption.
+
+### IV. Modularity and Separation
+
+Code organization MUST follow strict separation of concerns:
+
+- **Components** (`/components/`): Presentational UI only; no API calls or business logic
+- **Pages** (`/pages/`): Route handling and page composition; delegates to components
+- **API** (`/pages/api/`): Serverless functions; no UI code
+- **Lib** (`/lib/`): Shared utilities, Supabase client, data loaders; no framework-specific code
+- Each module MUST be independently testable
+
+**Rationale**: Clear boundaries reduce coupling, enable parallel development, and simplify debugging.
+
+### V. Naming and File Conventions
+
+Consistent naming MUST be enforced across the codebase:
+
+- **Microservices** (API routes): kebab-case (e.g., `generate-pokemon.js`, `battle.js`)
+- **React Components**: PascalCase files and exports (e.g., `BattleArena.jsx`)
+- **Utility modules**: camelCase (e.g., `pokemonData.js`, `supabase.js`)
+- **Source data files**: lowercase with hyphens or existing naming from game extraction
+
+**Rationale**: Predictable naming reduces cognitive load and prevents import errors.
+
+## Technology Stack
+
+This section defines the mandatory technology choices for the project:
+
+| Layer | Technology | Version Constraint |
+|-------|------------|-------------------|
+| Frontend Framework | Next.js | Latest stable |
+| Hosting | Vercel | N/A |
+| Authentication | Supabase Auth | Latest stable |
+| Database | Supabase PostgreSQL | N/A |
+| Backend | Vercel Serverless Functions | Node.js runtime |
+| Data Source | Local JSON files in `Source/` | N/A |
+
+**Required Environment Variables**:
+```
+NEXT_PUBLIC_SUPABASE_URL=<supabase-project-url>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<supabase-anon-key>
+SUPABASE_SERVICE_KEY=<supabase-service-key>
+```
+
+## Development Workflow
+
+### Authentication Flow
+
+1. Unauthenticated users see login page only
+2. All other routes MUST be protected via Supabase session validation
+3. Session tokens stored securely; no localStorage for sensitive data
+
+### Data Loading Pattern
+
+1. Serverless function receives request
+2. Load relevant Source folder data via `lib/pokemon-data.js`
+3. Process according to business rules
+4. Return JSON response
+5. Frontend renders result
+
+### Code Review Requirements
+
+- All PRs MUST verify compliance with this constitution
+- Source folder data usage MUST be validated (no hardcoding)
+- Security review for any authentication or API changes
+- Test coverage for new serverless functions
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices for this project. Amendments require:
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+1. Written proposal documenting the change and rationale
+2. Impact analysis on existing code
+3. Migration plan for affected components
+4. Version increment following semantic versioning:
+   - MAJOR: Principle removal or incompatible redefinition
+   - MINOR: New principle or section addition
+   - PATCH: Clarifications and non-semantic refinements
+
+All pull requests and code reviews MUST verify compliance with these principles. Complexity beyond what is specified here MUST be justified in writing.
+
+**Version**: 1.0.0 | **Ratified**: 2025-12-30 | **Last Amended**: 2025-12-30

@@ -1,0 +1,114 @@
+# Auth Context Contract
+# Defines the interface for authentication state management
+# Location: lib/authContext.js
+
+name: AuthContext
+type: react-context
+version: 1.0.0
+
+description: |
+  React Context providing authentication state and methods throughout the application.
+  Wraps the app in _app.js and consumed via useAuth() hook.
+
+# Provider Component
+provider:
+  name: AuthProvider
+  props:
+    children: ReactNode
+  description: Wraps application to provide auth state to all components
+
+# Context Value Shape
+value:
+  user:
+    type: "User | null"
+    description: Current authenticated user object or null if not authenticated
+    shape:
+      id:
+        type: string
+        format: uuid
+      email:
+        type: string
+        format: email
+      created_at:
+        type: string
+        format: date-time
+
+  loading:
+    type: boolean
+    description: True during initial session check and auth operations
+
+  signIn:
+    type: function
+    parameters:
+      - name: email
+        type: string
+        required: true
+      - name: password
+        type: string
+        required: true
+    returns:
+      type: "{ error: string | null }"
+    description: Authenticates user with email and password
+
+  signUp:
+    type: function
+    parameters:
+      - name: email
+        type: string
+        required: true
+      - name: password
+        type: string
+        required: true
+    returns:
+      type: "{ error: string | null }"
+    description: Creates new user account with email and password
+
+  signOut:
+    type: function
+    parameters: []
+    returns:
+      type: void
+    description: Signs out current user and clears session
+
+# Consumer Hook
+hook:
+  name: useAuth
+  returns: AuthContextValue
+  description: Hook to access auth context in any component
+  usage: |
+    import { useAuth } from '../lib/authContext'
+
+    function MyComponent() {
+      const { user, loading, signIn, signOut } = useAuth()
+
+      if (loading) return <LoadingSpinner />
+      if (!user) return <LoginForm />
+
+      return <Dashboard user={user} onLogout={signOut} />
+    }
+
+# Error Messages
+errors:
+  invalid_credentials:
+    message: "Invalid email or password"
+    triggers:
+      - Invalid login credentials
+      - User not found
+
+  signup_failed:
+    message: "Unable to create account. Please try again or use a different email."
+    triggers:
+      - User already registered
+      - Email already in use
+
+  network_error:
+    message: "Connection error. Please check your internet and try again."
+    triggers:
+      - Network request failed
+      - Fetch error
+
+  generic_error:
+    message: "An error occurred. Please try again."
+    triggers:
+      - Unknown error
+      - Unexpected error
