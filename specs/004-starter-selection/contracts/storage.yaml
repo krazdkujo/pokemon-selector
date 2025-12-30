@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: Storage API
+  description: API for managing Pokemon storage
+  version: 1.0.0
+
+paths:
+  /api/storage:
+    get:
+      summary: Get user's Pokemon storage
+      description: Returns all Pokemon in storage (not in active roster) with pagination
+      operationId: getStorage
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+          description: Items per page
+      responses:
+        '200':
+          description: Storage contents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  storage:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StoredPokemon'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Move Pokemon to active roster
+      description: Move a Pokemon from storage to an active roster slot
+      operationId: moveToActive
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pokemonDbId
+              properties:
+                pokemonDbId:
+                  type: string
+                  format: uuid
+                  description: PlayerPokemon database ID
+                targetSlot:
+                  type: integer
+                  minimum: 1
+                  maximum: 6
+                  description: Specific slot to use (optional, uses first available if not provided)
+      responses:
+        '200':
+          description: Pokemon moved to active roster
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  pokemon:
+                    $ref: '#/components/schemas/StoredPokemon'
+                  slotNumber:
+                    type: integer
+                    minimum: 1
+                    maximum: 6
+        '400':
+          description: Roster full or slot occupied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Pokemon not found or not in storage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    StoredPokemon:
+      type: object
+      description: Pokemon in storage
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: PlayerPokemon database ID
+        pokemonId:
+          type: string
+          example: "pikachu"
+        name:
+          type: string
+          example: "Pikachu"
+        nickname:
+          type: string
+          nullable: true
+        level:
+          type: integer
+          minimum: 1
+          maximum: 20
+        types:
+          type: array
+          items:
+            type: string
+        spriteUrl:
+          type: string
+          format: uri
+        acquiredAt:
+          type: string
+          format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 45
+        totalPages:
+          type: integer
+          example: 3
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Active roster is full (6/6)"

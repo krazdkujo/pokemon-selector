@@ -1,0 +1,163 @@
+openapi: 3.0.3
+info:
+  title: Roster API
+  description: API for managing active Pokemon roster
+  version: 1.0.0
+
+paths:
+  /api/roster:
+    get:
+      summary: Get user's active roster
+      description: Returns the user's active Pokemon (up to 6 slots)
+      operationId: getRoster
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Active roster
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  roster:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RosterSlot'
+                    maxItems: 6
+                  activeCount:
+                    type: integer
+                    minimum: 0
+                    maximum: 6
+                    example: 3
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update roster slot
+      description: Move Pokemon to storage or reorder slots
+      operationId: updateRoster
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pokemonDbId
+                - action
+              properties:
+                pokemonDbId:
+                  type: string
+                  format: uuid
+                  description: PlayerPokemon database ID
+                action:
+                  type: string
+                  enum: [moveToStorage, moveToSlot]
+                targetSlot:
+                  type: integer
+                  minimum: 1
+                  maximum: 6
+                  description: Required for moveToSlot action
+      responses:
+        '200':
+          description: Roster updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  roster:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RosterSlot'
+        '400':
+          description: Invalid action or slot occupied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Pokemon not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RosterSlot:
+      type: object
+      description: A slot in the active roster (1-6)
+      properties:
+        slotNumber:
+          type: integer
+          minimum: 1
+          maximum: 6
+        pokemon:
+          $ref: '#/components/schemas/RosterPokemon'
+          nullable: true
+          description: Pokemon in this slot, or null if empty
+
+    RosterPokemon:
+      type: object
+      description: Pokemon in a roster slot
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: PlayerPokemon database ID
+        pokemonId:
+          type: string
+          example: "bulbasaur"
+        name:
+          type: string
+          example: "Bulbasaur"
+        nickname:
+          type: string
+          nullable: true
+        level:
+          type: integer
+          minimum: 1
+          maximum: 20
+        types:
+          type: array
+          items:
+            type: string
+        spriteUrl:
+          type: string
+          format: uri
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Slot already occupied"

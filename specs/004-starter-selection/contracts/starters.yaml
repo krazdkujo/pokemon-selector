@@ -1,0 +1,200 @@
+openapi: 3.0.3
+info:
+  title: Starters API
+  description: API for browsing and selecting starter Pokemon
+  version: 1.0.0
+
+paths:
+  /api/starters:
+    get:
+      summary: Get all eligible starter Pokemon
+      description: Returns all Pokemon with SR <= 0.5 that can be selected as starters
+      operationId: getStarters
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of eligible starter Pokemon
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  starters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StarterPokemon'
+                  hasStarter:
+                    type: boolean
+                    description: Whether user already has a starter
+                  types:
+                    type: array
+                    items:
+                      type: string
+                    description: All available Pokemon types for filtering
+                    example: ["bug", "dark", "dragon", "electric", "fairy", "fighting", "fire", "flying", "ghost", "grass", "ground", "ice", "normal", "poison", "psychic", "rock", "steel", "water"]
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Select a starter Pokemon
+      description: Add selected Pokemon to user's active roster as their starter
+      operationId: selectStarter
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pokemonId
+              properties:
+                pokemonId:
+                  type: string
+                  description: Pokemon ID from Source data
+                  example: "bulbasaur"
+                nickname:
+                  type: string
+                  description: Optional nickname for the Pokemon
+                  example: "Sprout"
+      responses:
+        '201':
+          description: Starter selected successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  pokemon:
+                    $ref: '#/components/schemas/PlayerPokemon'
+        '400':
+          description: Invalid request (already has starter, invalid Pokemon)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Pokemon not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    StarterPokemon:
+      type: object
+      description: Pokemon eligible as a starter (from Source data)
+      properties:
+        id:
+          type: string
+          example: "bulbasaur"
+        name:
+          type: string
+          example: "Bulbasaur"
+        number:
+          type: integer
+          example: 1
+        types:
+          type: array
+          items:
+            type: string
+          example: ["grass", "poison"]
+        sr:
+          type: number
+          description: Challenge Rating
+          example: 0.5
+        spriteUrl:
+          type: string
+          format: uri
+          example: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+        description:
+          type: string
+          example: "The Seed Pokemon. It can go for days without eating a single morsel."
+        attributes:
+          type: object
+          properties:
+            str:
+              type: integer
+            dex:
+              type: integer
+            con:
+              type: integer
+            int:
+              type: integer
+            wis:
+              type: integer
+            cha:
+              type: integer
+
+    PlayerPokemon:
+      type: object
+      description: Pokemon owned by a player
+      properties:
+        id:
+          type: string
+          format: uuid
+        pokemonId:
+          type: string
+          example: "bulbasaur"
+        name:
+          type: string
+          example: "Bulbasaur"
+        nickname:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        slotNumber:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 6
+        level:
+          type: integer
+          minimum: 1
+          maximum: 20
+        types:
+          type: array
+          items:
+            type: string
+        spriteUrl:
+          type: string
+          format: uri
+        acquiredAt:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "You already have a starter Pokemon"
