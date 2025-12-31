@@ -1817,3 +1817,116 @@ button {
     align-items: flex-start;
   }
 }
+
+/* ==================== */
+/* Tooltip Styles       */
+/* ==================== */
+
+.tooltip {
+  position: fixed;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  max-width: 320px;
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+.tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tooltip-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+.tooltip-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.tooltip-stats span {
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.tooltip-description {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.tooltip-higher-levels {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 8px;
+  margin-bottom: 0;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tooltip-error {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.tooltip-hidden-badge {
+  background: #8b5cf6;
+  color: white;
+  font-size: 0.625rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.tooltip-loading {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Hoverable elements */
+.hoverable {
+  cursor: help;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+.hoverable:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.hoverable:hover {
+  text-decoration-style: solid;
+}
+
+/* Make move tags and ability names clickable-looking */
+.move-tag.hoverable,
+.ability-name.hoverable {
+  transition: background-color 0.15s ease;
+}
+
+.move-tag.hoverable:hover {
+  background-color: #dbeafe;
+}
+
+.ability-name.hoverable:hover {
+  background-color: #f3f4f6;
+}

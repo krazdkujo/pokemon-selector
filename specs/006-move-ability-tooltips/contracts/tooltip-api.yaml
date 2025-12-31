@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: Tooltip Data API
+  description: API endpoint for fetching move and ability details for tooltips
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Next.js API routes
+
+paths:
+  /tooltip-data:
+    get:
+      summary: Get move or ability data for tooltip display
+      description: |
+        Fetches complete data for a move or ability by ID.
+        Used to populate tooltip content when users hover over move/ability names.
+      operationId: getTooltipData
+      parameters:
+        - name: type
+          in: query
+          required: true
+          description: Type of data to fetch
+          schema:
+            type: string
+            enum: [move, ability]
+        - name: id
+          in: query
+          required: true
+          description: The ID of the move or ability (kebab-case)
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]+$'
+            example: 'thunder-punch'
+      responses:
+        '200':
+          description: Successfully retrieved tooltip data
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/MoveTooltipResponse'
+                  - $ref: '#/components/schemas/AbilityTooltipResponse'
+              examples:
+                move:
+                  summary: Move data example
+                  value:
+                    success: true
+                    type: move
+                    data:
+                      id: thunder-punch
+                      name: Thunder Punch
+                      type: electric
+                      power: ['str', 'dex']
+                      time: '1 action'
+                      pp: 10
+                      duration: instantaneous
+                      range: melee
+                      description: 'You strike a creature with a lightning-charged fist...'
+                      higherLevels: 'The damage dice roll for this move changes to 2d6 at level 5...'
+                ability:
+                  summary: Ability data example
+                  value:
+                    success: true
+                    type: ability
+                    data:
+                      id: adaptability
+                      name: Adaptability
+                      description: 'When this Pokemon uses a move of its own type...'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: 'Missing required parameter: type'
+        '404':
+          description: Move or ability not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: 'Move not found: invalid-move-id'
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: 'Method not allowed'
+
+components:
+  schemas:
+    MoveTooltipResponse:
+      type: object
+      required:
+        - success
+        - type
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        type:
+          type: string
+          enum: [move]
+        data:
+          $ref: '#/components/schemas/MoveData'
+
+    AbilityTooltipResponse:
+      type: object
+      required:
+        - success
+        - type
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        type:
+          type: string
+          enum: [ability]
+        data:
+          $ref: '#/components/schemas/AbilityData'
+
+    MoveData:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - power
+        - time
+        - pp
+        - duration
+        - range
+        - description
+      properties:
+        id:
+          type: string
+          description: Unique identifier (kebab-case)
+          example: thunder-punch
+        name:
+          type: string
+          description: Display name
+          example: Thunder Punch
+        type:
+          type: string
+          description: Pokemon type
+          example: electric
+        power:
+          oneOf:
+            - type: array
+              items:
+                type: string
+              description: Ability scores used for attack
+              example: ['str', 'dex']
+            - type: string
+              enum: ['none']
+              description: Move requires no ability score
+        time:
+          type: string
+          description: Action economy
+          example: '1 action'
+        pp:
+          type: integer
+          description: Power points
+          example: 10
+        duration:
+          type: string
+          description: Effect duration
+          example: instantaneous
+        range:
+          type: string
+          description: Attack range
+          example: melee
+        description:
+          type: string
+          description: Full move description
+        higherLevels:
+          type: string
+          description: Scaling at higher levels
+          nullable: true
+
+    AbilityData:
+      type: object
+      required:
+        - id
+        - name
+        - description
+      properties:
+        id:
+          type: string
+          description: Unique identifier (kebab-case)
+          example: adaptability
+        name:
+          type: string
+          description: Display name
+          example: Adaptability
+        description:
+          type: string
+          description: Full ability description
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error message

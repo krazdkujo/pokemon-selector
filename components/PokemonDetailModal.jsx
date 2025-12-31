@@ -1,6 +1,22 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import Tooltip from './Tooltip'
+import MoveTooltipContent from './MoveTooltipContent'
+import AbilityTooltipContent from './AbilityTooltipContent'
 
 export default function PokemonDetailModal({ pokemon, onClose }) {
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    type: null,
+    id: null,
+    position: { top: 0, left: 0 },
+    data: null,
+    loading: false,
+    isHidden: false
+  })
+  const [dataCache, setDataCache] = useState({})
+  const modalBodyRef = useRef(null)
+  const hoverTimeoutRef = useRef(null)
+
   // Handle Escape key to close modal
   useEffect(() => {
     function handleKeyDown(e) {
@@ -12,6 +28,28 @@ export default function PokemonDetailModal({ pokemon, onClose }) {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
+  // Dismiss tooltip on scroll
+  useEffect(() => {
+    const modalBody = modalBodyRef.current
+    if (!modalBody) return
+
+    function handleScroll() {
+      hideTooltip()
+    }
+
+    modalBody.addEventListener('scroll', handleScroll)
+    return () => modalBody.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current)
+      }
+    }
+  }, [])
+
   function handleOverlayClick(e) {
     if (e.target === e.currentTarget) {
       onClose()
@@ -21,6 +59,125 @@ export default function PokemonDetailModal({ pokemon, onClose }) {
   // Format ability name from kebab-case to Title Case
   function formatAbilityName(id) {
     return id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  }
+
+  // Format move name from kebab-case to Title Case
+  function formatMoveName(id) {
+    return id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  }
+
+  async function fetchTooltipData(type, id) {
+    const cacheKey = `${type}:${id}`
+    if (dataCache[cacheKey]) {
+      return dataCache[cacheKey]
+    }
+
+    try {
+      const response = await fetch(`/api/tooltip-data?type=${type}&id=${id}`)
+      const result = await response.json()
+      if (result.success) {
+        setDataCache(prev => ({ ...prev, [cacheKey]: result.data }))
+        return result.data
+      }
+      return null
+    } catch (err) {
+      console.error('Failed to fetch tooltip data:', err)
+      return null
+    }
+  }
+
+  function showTooltip(e, type, id, isHidden = false) {
+    // Clear any pending timeout
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+    }
+
+    const rect = e.currentTarget.getBoundingClientRect()
+    const position = {
+      top: rect.bottom + 8,
+      left: rect.left + (rect.width / 2) - 160
+    }
+
+    // Add 200ms delay before showing tooltip
+    hoverTimeoutRef.current = setTimeout(async () => {
+      setTooltip({
+        visible: true,
+        type,
+        id,
+        position,
+        data: null,
+        loading: true,
+        isHidden
+      })
+
+      const data = await fetchTooltipData(type, id)
+      setTooltip(prev => ({
+        ...prev,
+        data,
+        loading: false
+      }))
+    }, 200)
+  }
+
+  function hideTooltip() {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+    }
+    setTooltip(prev => ({ ...prev, visible: false }))
+  }
+
+  function handleTooltipMouseEnter() {
+    // Keep tooltip visible when hovering over it
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+    }
+  }
+
+  function handleTooltipMouseLeave() {
+    hideTooltip()
+  }
+
+  // Handle keyboard focus
+  function handleFocus(e, type, id, isHidden = false) {
+    showTooltip(e, type, id, isHidden)
+  }
+
+  function handleBlur() {
+    hideTooltip()
+  }
+
+  // Handle touch/tap
+  function handleClick(e, type, id, isHidden = false) {
+    e.preventDefault()
+    if (tooltip.visible && tooltip.type === type && tooltip.id === id) {
+      hideTooltip()
+    } else {
+      // Clear timeout and show immediately on tap
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current)
+      }
+      const rect = e.currentTarget.getBoundingClientRect()
+      const position = {
+        top: rect.bottom + 8,
+        left: rect.left + (rect.width / 2) - 160
+      }
+      setTooltip({
+        visible: true,
+        type,
+        id,
+        position,
+        data: null,
+        loading: true,
+        isHidden
+      })
+      fetchTooltipData(type, id).then(data => {
+        setTooltip(prev => ({
+          ...prev,
+          data,
+          loading: false
+        }))
+      })
+    }
   }
 
   // Get starting moves
@@ -68,7 +225,7 @@ export default function PokemonDetailModal({ pokemon, onClose }) {
           </div>
         </div>
 
-        <div className="modal-body">
+        <div className="modal-body" ref={modalBodyRef}>
           {pokemon.description && (
             <p className="pokemon-description">{pokemon.description}</p>
           )}
@@ -141,7 +298,17 @@ export default function PokemonDetailModal({ pokemon, onClose }) {
               <ul className="abilities-list">
                 {pokemon.abilities.map(ability => (
                   <li key={ability.id} className="ability-item">
-                    <span className="ability-name">
+                    <span
+                      className="ability-name hoverable"
+                      tabIndex={0}
+                      role="button"
+                      aria-describedby={tooltip.visible && tooltip.type === 'ability' && tooltip.id === ability.id ? 'tooltip' : undefined}
+                      onMouseEnter={(e) => showTooltip(e, 'ability', ability.id, ability.hidden)}
+                      onMouseLeave={hideTooltip}
+                      onFocus={(e) => handleFocus(e, 'ability', ability.id, ability.hidden)}
+                      onBlur={handleBlur}
+                      onClick={(e) => handleClick(e, 'ability', ability.id, ability.hidden)}
+                    >
                       {formatAbilityName(ability.id)}
                     </span>
                     {ability.hidden && <span className="hidden-badge">Hidden</span>}
@@ -156,8 +323,19 @@ export default function PokemonDetailModal({ pokemon, onClose }) {
               <h3>Starting Moves</h3>
               <div className="moves-list-compact">
                 {startMoves.map(move => (
-                  <span key={move} className="move-tag">
-                    {move.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                  <span
+                    key={move}
+                    className="move-tag hoverable"
+                    tabIndex={0}
+                    role="button"
+                    aria-describedby={tooltip.visible && tooltip.type === 'move' && tooltip.id === move ? 'tooltip' : undefined}
+                    onMouseEnter={(e) => showTooltip(e, 'move', move)}
+                    onMouseLeave={hideTooltip}
+                    onFocus={(e) => handleFocus(e, 'move', move)}
+                    onBlur={handleBlur}
+                    onClick={(e) => handleClick(e, 'move', move)}
+                  >
+                    {formatMoveName(move)}
                   </span>
                 ))}
               </div>
@@ -173,8 +351,19 @@ export default function PokemonDetailModal({ pokemon, onClose }) {
                     <span className="level-label">Lv.{level}:</span>
                     <div className="moves-list-compact">
                       {moves.map(move => (
-                        <span key={move} className="move-tag">
-                          {move.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                        <span
+                          key={move}
+                          className="move-tag hoverable"
+                          tabIndex={0}
+                          role="button"
+                          aria-describedby={tooltip.visible && tooltip.type === 'move' && tooltip.id === move ? 'tooltip' : undefined}
+                          onMouseEnter={(e) => showTooltip(e, 'move', move)}
+                          onMouseLeave={hideTooltip}
+                          onFocus={(e) => handleFocus(e, 'move', move)}
+                          onBlur={handleBlur}
+                          onClick={(e) => handleClick(e, 'move', move)}
+                        >
+                          {formatMoveName(move)}
                         </span>
                       ))}
                     </div>
@@ -204,6 +393,25 @@ export default function PokemonDetailModal({ pokemon, onClose }) {
             Close
           </button>
         </div>
+
+        <Tooltip
+          isVisible={tooltip.visible}
+          position={tooltip.position}
+          id="tooltip"
+          onMouseEnter={handleTooltipMouseEnter}
+          onMouseLeave={handleTooltipMouseLeave}
+        >
+          {tooltip.type === 'move' && (
+            <MoveTooltipContent move={tooltip.data} loading={tooltip.loading} />
+          )}
+          {tooltip.type === 'ability' && (
+            <AbilityTooltipContent
+              ability={tooltip.data}
+              isHidden={tooltip.isHidden}
+              loading={tooltip.loading}
+            />
+          )}
+        </Tooltip>
       </div>
     </div>
   )
