@@ -1,4 +1,4 @@
-export default function RosterSlot({ slot, pokemon, onMoveToStorage, disabled }) {
+export default function RosterSlot({ slot, pokemon, onMoveToStorage, onPokemonClick, disabled }) {
   if (!pokemon) {
     return (
       <div className="roster-slot empty">
@@ -8,8 +8,14 @@ export default function RosterSlot({ slot, pokemon, onMoveToStorage, disabled })
     )
   }
 
+  function handleClick() {
+    if (onPokemonClick && !disabled) {
+      onPokemonClick(pokemon)
+    }
+  }
+
   return (
-    <div className="roster-slot filled">
+    <div className={`roster-slot filled ${onPokemonClick ? 'clickable' : ''}`} onClick={handleClick}>
       <img
         src={pokemon.spriteUrl}
         alt={pokemon.name}
@@ -31,7 +37,10 @@ export default function RosterSlot({ slot, pokemon, onMoveToStorage, disabled })
       {onMoveToStorage && (
         <button
           className="move-to-storage-button"
-          onClick={() => onMoveToStorage(pokemon.id)}
+          onClick={(e) => {
+            e.stopPropagation()
+            onMoveToStorage(pokemon.id)
+          }}
           disabled={disabled}
           title="Move to Storage"
         >

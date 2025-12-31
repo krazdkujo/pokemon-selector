@@ -40,12 +40,15 @@ async function handleGetStarters(req, res) {
       return res.status(401).json({ success: false, error: 'Unauthorized' })
     }
 
+    // Create authenticated client for RLS
+    const authClient = createAuthenticatedClient(token)
+
     // Get starter Pokemon from Source data
     const starters = getStarterPokemon()
     const types = getPokemonTypes()
 
     // Check if user already has a starter (any Pokemon in their roster)
-    const { data: existingPokemon, error: dbError } = await supabase
+    const { data: existingPokemon, error: dbError } = await authClient
       .from('player_pokemon')
       .select('id')
       .eq('user_id', user.id)

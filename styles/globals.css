@@ -1135,6 +1135,16 @@ button {
   border: 1px solid #e5e7eb;
 }
 
+.roster-slot.clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.roster-slot.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .empty-slot-icon {
   font-size: 2rem;
   color: #d1d5db;
@@ -1380,6 +1390,329 @@ button {
   font-size: 0.875rem;
 }
 
+/* Collection View */
+.collection-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f5f5f5;
+}
+
+.collection-nav {
+  margin-bottom: 1rem;
+}
+
+.collection-nav .nav-link {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: white;
+  border-radius: 8px;
+  color: #3b82f6;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.collection-nav .nav-link:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.collection-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.collection-header h1 {
+  font-size: 2rem;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.collection-header p {
+  color: #6b7280;
+}
+
+.collection-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.collection-count {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.collection-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.collection-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.collection-sprite {
+  width: 80px;
+  height: 80px;
+  image-rendering: pixelated;
+}
+
+.collection-card-info {
+  margin-top: 0.5rem;
+}
+
+.collection-card-info h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.collection-types {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.collection-types .type-badge {
+  font-size: 0.5rem;
+  padding: 0.125rem 0.375rem;
+}
+
+.collection-sr-badge {
+  font-size: 0.625rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.collection-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  background: white;
+  border-radius: 12px;
+}
+
+.retry-button {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.retry-button:hover {
+  background: #2563eb;
+}
+
+/* Pokemon Detail Modal Enhancements */
+.pokemon-detail-modal {
+  max-width: 600px;
+}
+
+.modal-sr {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.info-item {
+  background: #f3f4f6;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.info-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.info-value {
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: capitalize;
+}
+
+.moves-section {
+  margin-top: 1.5rem;
+}
+
+.moves-section h3 {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.moves-list-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.move-tag {
+  background: #e0e7ff;
+  color: #4338ca;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.level-moves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.level-move-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.level-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 40px;
+}
+
+.tm-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.tm-tag {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.tm-more {
+  font-size: 0.75rem;
+  color: #6b7280;
+  padding: 0.125rem 0.375rem;
+}
+
+.close-modal-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.close-modal-button:hover {
+  background: #2563eb;
+}
+
+.collection-grid-container {
+  width: 100%;
+}
+
+/* Collection Filter Bar */
+.collection-filter-bar {
+  margin-bottom: 1.5rem;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.clear-filters-button {
+  padding: 0.5rem 1rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.clear-filters-button:hover {
+  background: #fecaca;
+}
+
+/* SR Filter Dropdown */
+.sr-filter-dropdown {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-top: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.sr-filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.sr-filter-select {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.sr-filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.sr-filter-select:hover {
+  border-color: #9ca3af;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .pokemon-header {
@@ -1429,5 +1762,58 @@ button {
   .dashboard-nav {
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  /* Collection View Responsive */
+  .collection-container {
+    padding: 1rem;
+  }
+
+  .collection-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .collection-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .collection-card {
+    padding: 0.75rem;
+  }
+
+  .collection-sprite {
+    width: 60px;
+    height: 60px;
+  }
+
+  .collection-card-info h4 {
+    font-size: 0.7rem;
+  }
+
+  /* Filter Bar Responsive */
+  .sr-filter-dropdown {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .sr-filter-select {
+    width: 100%;
+  }
+
+  /* Modal Responsive */
+  .pokemon-detail-modal {
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .level-move-group {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

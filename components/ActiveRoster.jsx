@@ -4,7 +4,7 @@ import RosterSlot from './RosterSlot'
 import LoadingSpinner from './LoadingSpinner'
 import Link from 'next/link'
 
-export default function ActiveRoster() {
+export default function ActiveRoster({ onPokemonClick }) {
   const { session } = useAuth()
   const [roster, setRoster] = useState([])
   const [loading, setLoading] = useState(true)
@@ -116,6 +116,7 @@ export default function ActiveRoster() {
             slot={slot.slotNumber}
             pokemon={slot.pokemon}
             onMoveToStorage={hasAnyPokemon ? handleMoveToStorage : null}
+            onPokemonClick={onPokemonClick}
             disabled={updating}
           />
         ))}

@@ -47,6 +47,12 @@ export default function SelectStarterPage() {
       setStarters(data.starters)
       setTypes(data.types)
       setHasStarter(data.hasStarter)
+
+      // Redirect to collection if user already has a starter
+      if (data.hasStarter) {
+        router.push('/collection')
+        return
+      }
     } catch (err) {
       setError('Connection error. Please try again.')
     } finally {
