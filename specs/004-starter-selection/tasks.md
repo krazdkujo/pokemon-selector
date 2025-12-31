@@ -28,9 +28,9 @@
 
 **Purpose**: Project initialization and database setup
 
-- [ ] T001 Verify existing auth system works (login, session management via Supabase)
-- [ ] T002 Verify Source folder data files exist (Source/pokemon/pokemon.json is readable)
-- [ ] T003 Create player_pokemon table in Supabase using SQL schema from data-model.md
+- [x] T001 Verify existing auth system works (login, session management via Supabase)
+- [x] T002 Verify Source folder data files exist (Source/pokemon/pokemon.json is readable)
+- [x] T003 Create player_pokemon table in Supabase using SQL schema from data-model.md
 
 ---
 
@@ -40,9 +40,9 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Add getStarterPokemon() function to filter SR <= 0.5 Pokemon in lib/pokemonData.js
-- [ ] T005 Add getPokemonTypes() function to return all 18 type names in lib/pokemonData.js
-- [ ] T006 [P] Create helper function to build PlayerPokemon response object in lib/pokemonData.js
+- [x] T004 Add getStarterPokemon() function to filter SR <= 0.5 Pokemon in lib/pokemonData.js
+- [x] T005 Add getPokemonTypes() function to return all 18 type names in lib/pokemonData.js
+- [x] T006 [P] Create helper function to build PlayerPokemon response object in lib/pokemonData.js
 
 **Checkpoint**: Foundation ready - all data loaders implemented. User story implementation can now begin.
 
@@ -56,20 +56,20 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Create GET handler in pages/api/starters.js that returns all starter Pokemon and types list
-- [ ] T008 [US1] Add authentication check to GET /api/starters using Supabase getUser()
-- [ ] T009 [US1] Add hasStarter flag to GET /api/starters response by checking player_pokemon count
-- [ ] T010 [P] [US1] Create TypeFilterBar.jsx component shell in components/TypeFilterBar.jsx with 18 type buttons
-- [ ] T011 [US1] Implement type selection logic in TypeFilterBar.jsx (max 2 types, toggle behavior)
-- [ ] T012 [P] [US1] Create StarterCard.jsx component in components/StarterCard.jsx showing sprite, name, types
-- [ ] T013 [P] [US1] Create StarterGrid.jsx component in components/StarterGrid.jsx to display filtered Pokemon cards
-- [ ] T014 [US1] Implement client-side type filtering in StarterGrid.jsx using union logic
-- [ ] T015 [US1] Create select-starter.js page in pages/select-starter.js with ProtectedRoute wrapper
-- [ ] T016 [US1] Integrate TypeFilterBar and StarterGrid into pages/select-starter.js
-- [ ] T017 [US1] Add "Select 1 or 2 types" prompt when no types selected in pages/select-starter.js
-- [ ] T018 [US1] Add "No Pokemon match these types" message for empty results in StarterGrid.jsx
-- [ ] T019 [P] [US1] Add type filter button styles to styles/globals.css (selected/unselected states)
-- [ ] T020 [P] [US1] Add starter card grid styles to styles/globals.css (grid layout, hover effects)
+- [x] T007 [US1] Create GET handler in pages/api/starters.js that returns all starter Pokemon and types list
+- [x] T008 [US1] Add authentication check to GET /api/starters using Supabase getUser()
+- [x] T009 [US1] Add hasStarter flag to GET /api/starters response by checking player_pokemon count
+- [x] T010 [P] [US1] Create TypeFilterBar.jsx component shell in components/TypeFilterBar.jsx with 18 type buttons
+- [x] T011 [US1] Implement type selection logic in TypeFilterBar.jsx (max 2 types, toggle behavior)
+- [x] T012 [P] [US1] Create StarterCard.jsx component in components/StarterCard.jsx showing sprite, name, types
+- [x] T013 [P] [US1] Create StarterGrid.jsx component in components/StarterGrid.jsx to display filtered Pokemon cards
+- [x] T014 [US1] Implement client-side type filtering in StarterGrid.jsx using union logic
+- [x] T015 [US1] Create select-starter.js page in pages/select-starter.js with ProtectedRoute wrapper
+- [x] T016 [US1] Integrate TypeFilterBar and StarterGrid into pages/select-starter.js
+- [x] T017 [US1] Add "Select 1 or 2 types" prompt when no types selected in pages/select-starter.js
+- [x] T018 [US1] Add "No Pokemon match these types" message for empty results in StarterGrid.jsx
+- [x] T019 [P] [US1] Add type filter button styles to styles/globals.css (selected/unselected states)
+- [x] T020 [P] [US1] Add starter card grid styles to styles/globals.css (grid layout, hover effects)
 
 **Checkpoint**: User Story 1 complete - users can browse and filter starter Pokemon. MVP delivered.
 
@@ -83,18 +83,18 @@
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Create POST handler in pages/api/starters.js that saves selected starter to database
-- [ ] T022 [US2] Add validation to POST /api/starters: check pokemon_id exists, user has no starter yet
-- [ ] T023 [US2] Implement slot assignment logic in POST /api/starters (assign slot 1 for starter)
-- [ ] T024 [US2] Add error handling for database failures in POST /api/starters with user-friendly messages
-- [ ] T025 [P] [US2] Create StarterDetailModal.jsx component in components/StarterDetailModal.jsx
-- [ ] T026 [US2] Add full Pokemon details to StarterDetailModal.jsx (stats, abilities, description)
-- [ ] T027 [US2] Add "Choose as Starter" button to StarterDetailModal.jsx
-- [ ] T028 [US2] Implement modal open/close behavior when clicking StarterCard in pages/select-starter.js
-- [ ] T029 [US2] Wire "Choose as Starter" button to POST /api/starters in StarterDetailModal.jsx
-- [ ] T030 [US2] Add redirect to /dashboard after successful starter selection
-- [ ] T031 [US2] Add "You already have a starter" message when hasStarter is true in pages/select-starter.js
-- [ ] T032 [P] [US2] Add modal overlay and content styles to styles/globals.css
+- [x] T021 [US2] Create POST handler in pages/api/starters.js that saves selected starter to database
+- [x] T022 [US2] Add validation to POST /api/starters: check pokemon_id exists, user has no starter yet
+- [x] T023 [US2] Implement slot assignment logic in POST /api/starters (assign slot 1 for starter)
+- [x] T024 [US2] Add error handling for database failures in POST /api/starters with user-friendly messages
+- [x] T025 [P] [US2] Create StarterDetailModal.jsx component in components/StarterDetailModal.jsx
+- [x] T026 [US2] Add full Pokemon details to StarterDetailModal.jsx (stats, abilities, description)
+- [x] T027 [US2] Add "Choose as Starter" button to StarterDetailModal.jsx
+- [x] T028 [US2] Implement modal open/close behavior when clicking StarterCard in pages/select-starter.js
+- [x] T029 [US2] Wire "Choose as Starter" button to POST /api/starters in StarterDetailModal.jsx
+- [x] T030 [US2] Add redirect to /dashboard after successful starter selection
+- [x] T031 [US2] Add "You already have a starter" message when hasStarter is true in pages/select-starter.js
+- [x] T032 [P] [US2] Add modal overlay and content styles to styles/globals.css
 
 **Checkpoint**: User Story 2 complete - users can select their starter Pokemon.
 
@@ -108,15 +108,15 @@
 
 ### Implementation for User Story 3
 
-- [ ] T033 [US3] Create GET handler in pages/api/roster.js that returns user's active Pokemon
-- [ ] T034 [US3] Add authentication check to GET /api/roster using Supabase getUser()
-- [ ] T035 [US3] Format roster response as 6 slots with Pokemon data or null for empty slots
-- [ ] T036 [P] [US3] Create RosterSlot.jsx component in components/RosterSlot.jsx showing Pokemon or empty state
-- [ ] T037 [P] [US3] Create ActiveRoster.jsx component in components/ActiveRoster.jsx with 6 RosterSlot instances
-- [ ] T038 [US3] Add API call to GET /api/roster in ActiveRoster.jsx on component mount
-- [ ] T039 [US3] Integrate ActiveRoster component into pages/dashboard.js
-- [ ] T040 [US3] Add "Select your starter" prompt with link to /select-starter when roster is empty
-- [ ] T041 [P] [US3] Add roster grid styles to styles/globals.css (6-slot layout, filled/empty states)
+- [x] T033 [US3] Create GET handler in pages/api/roster.js that returns user's active Pokemon
+- [x] T034 [US3] Add authentication check to GET /api/roster using Supabase getUser()
+- [x] T035 [US3] Format roster response as 6 slots with Pokemon data or null for empty slots
+- [x] T036 [P] [US3] Create RosterSlot.jsx component in components/RosterSlot.jsx showing Pokemon or empty state
+- [x] T037 [P] [US3] Create ActiveRoster.jsx component in components/ActiveRoster.jsx with 6 RosterSlot instances
+- [x] T038 [US3] Add API call to GET /api/roster in ActiveRoster.jsx on component mount
+- [x] T039 [US3] Integrate ActiveRoster component into pages/dashboard.js
+- [x] T040 [US3] Add "Select your starter" prompt with link to /select-starter when roster is empty
+- [x] T041 [P] [US3] Add roster grid styles to styles/globals.css (6-slot layout, filled/empty states)
 
 **Checkpoint**: User Story 3 complete - dashboard shows active Pokemon roster.
 
@@ -130,19 +130,19 @@
 
 ### Implementation for User Story 4
 
-- [ ] T042 [US4] Create GET handler in pages/api/storage.js with pagination support
-- [ ] T043 [US4] Add authentication check to GET /api/storage using Supabase getUser()
-- [ ] T044 [US4] Create POST handler in pages/api/storage.js to move Pokemon to active roster
-- [ ] T045 [US4] Add validation to POST /api/storage: check Pokemon in storage, roster has space
-- [ ] T046 [US4] Create PUT handler in pages/api/roster.js for moveToStorage action
-- [ ] T047 [US4] Add validation to PUT /api/roster: check Pokemon owned, is active
-- [ ] T048 [P] [US4] Create StorageView.jsx component in components/StorageView.jsx
-- [ ] T049 [US4] Add pagination controls to StorageView.jsx
-- [ ] T050 [US4] Add "Move to Active" button to stored Pokemon cards in StorageView.jsx
-- [ ] T051 [US4] Add "Move to Storage" button to RosterSlot.jsx for active Pokemon
-- [ ] T052 [US4] Create storage.js page in pages/storage.js with ProtectedRoute wrapper
-- [ ] T053 [US4] Wire storage operations to APIs in components
-- [ ] T054 [P] [US4] Add storage view styles to styles/globals.css
+- [x] T042 [US4] Create GET handler in pages/api/storage.js with pagination support
+- [x] T043 [US4] Add authentication check to GET /api/storage using Supabase getUser()
+- [x] T044 [US4] Create POST handler in pages/api/storage.js to move Pokemon to active roster
+- [x] T045 [US4] Add validation to POST /api/storage: check Pokemon in storage, roster has space
+- [x] T046 [US4] Create PUT handler in pages/api/roster.js for moveToStorage action
+- [x] T047 [US4] Add validation to PUT /api/roster: check Pokemon owned, is active
+- [x] T048 [P] [US4] Create StorageView.jsx component in components/StorageView.jsx
+- [x] T049 [US4] Add pagination controls to StorageView.jsx
+- [x] T050 [US4] Add "Move to Active" button to stored Pokemon cards in StorageView.jsx
+- [x] T051 [US4] Add "Move to Storage" button to RosterSlot.jsx for active Pokemon
+- [x] T052 [US4] Create storage.js page in pages/storage.js with ProtectedRoute wrapper
+- [x] T053 [US4] Wire storage operations to APIs in components
+- [x] T054 [P] [US4] Add storage view styles to styles/globals.css
 
 **Checkpoint**: User Story 4 complete - full Pokemon collection management available.
 
@@ -152,8 +152,8 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T055 Add request timeout handling (10 second limit) to all API routes
-- [ ] T056 Add console logging for errors in all API routes for debugging
+- [x] T055 Add request timeout handling (10 second limit) to all API routes
+- [x] T056 Add console logging for errors in all API routes for debugging
 - [ ] T057 Verify all acceptance scenarios from spec.md work correctly
 - [ ] T058 Test edge cases: no matching types, database failures, concurrent sessions
 - [ ] T059 Test rapid consecutive operations for stability

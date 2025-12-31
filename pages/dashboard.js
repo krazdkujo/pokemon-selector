@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import Link from 'next/link'
 import { useAuth } from '../lib/authContext'
 import ProtectedRoute from '../components/ProtectedRoute'
-import PokemonSelector from '../components/PokemonSelector'
+import ActiveRoster from '../components/ActiveRoster'
 
 export default function DashboardPage() {
   const { user, signOut } = useAuth()
@@ -31,8 +32,17 @@ export default function DashboardPage() {
           </div>
         </header>
 
+        <nav className="dashboard-nav">
+          <Link href="/select-starter" className="nav-link">
+            Select Starter
+          </Link>
+          <Link href="/storage" className="nav-link">
+            Storage
+          </Link>
+        </nav>
+
         <section className="dashboard-content">
-          <PokemonSelector />
+          <ActiveRoster />
         </section>
       </main>
     </ProtectedRoute>
