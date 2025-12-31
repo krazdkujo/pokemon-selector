@@ -68,10 +68,17 @@ export default function SelectStarterPage() {
     setSelectedPokemon(null)
   }
 
-  async function handleSelectStarter(pokemonId, nickname) {
+  async function handleSelectStarter(pokemonId, nickname, setupData = null) {
     try {
       setSelecting(true)
       setError(null)
+
+      // Build request body with optional setup data (moves/HP)
+      const requestBody = { pokemonId, nickname }
+      if (setupData) {
+        requestBody.selectedMoves = setupData.selectedMoves
+        requestBody.hpMethod = setupData.hpMethod
+      }
 
       const response = await fetch('/api/starters', {
         method: 'POST',
@@ -79,7 +86,7 @@ export default function SelectStarterPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ pokemonId, nickname }),
+        body: JSON.stringify(requestBody),
       })
 
       const data = await response.json()

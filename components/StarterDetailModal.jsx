@@ -1,16 +1,54 @@
 import { useState } from 'react'
+import PokemonSetupModal from './PokemonSetupModal'
 
 export default function StarterDetailModal({ pokemon, onClose, onSelect, selecting }) {
   const [nickname, setNickname] = useState('')
+  const [showSetupModal, setShowSetupModal] = useState(false)
 
-  function handleSelect() {
-    onSelect(pokemon.id, nickname.trim() || null)
+  function handleChooseStarter() {
+    // Instead of immediately calling onSelect, show the setup modal
+    setShowSetupModal(true)
+  }
+
+  function handleSetupConfirm(setupData) {
+    // Pass all the data to the parent's onSelect handler
+    onSelect(pokemon.id, nickname.trim() || null, setupData)
+  }
+
+  function handleSetupCancel() {
+    // Return to the starter detail modal
+    setShowSetupModal(false)
   }
 
   function handleOverlayClick(e) {
     if (e.target === e.currentTarget) {
       onClose()
     }
+  }
+
+  // If showing the setup modal, render that instead
+  if (showSetupModal) {
+    // Build the pokemon object expected by PokemonSetupModal
+    const setupPokemon = {
+      id: pokemon.id,
+      name: pokemon.name,
+      number: pokemon.number,
+      types: pokemon.types,
+      spriteUrl: pokemon.spriteUrl,
+      hitDice: pokemon.hitDice || 'd6',
+      attributes: pokemon.attributes,
+    }
+
+    return (
+      <PokemonSetupModal
+        pokemon={setupPokemon}
+        level={1}
+        nickname={nickname.trim() || null}
+        onConfirm={handleSetupConfirm}
+        onCancel={handleSetupCancel}
+        isSubmitting={selecting}
+      />
+    )
   }
 
   return (
@@ -119,7 +157,7 @@ export default function StarterDetailModal({ pokemon, onClose, onSelect, selecti
           </button>
           <button
             className="select-starter-button"
-            onClick={handleSelect}
+            onClick={handleChooseStarter}
             disabled={selecting}
           >
             {selecting ? 'Selecting...' : 'Choose as Starter'}

@@ -4,6 +4,8 @@ import {
   getPokemonTypes,
   getPokemonById,
   buildPlayerPokemonResponse,
+  getAvailableMovesForLevel,
+  calculateHP,
 } from '../../lib/pokemonData'
 
 /**
@@ -112,7 +114,7 @@ async function handleSelectStarter(req, res) {
     // Create authenticated client for RLS
     const authClient = createAuthenticatedClient(token)
 
-    const { pokemonId, nickname } = req.body || {}
+    const { pokemonId, nickname, selectedMoves, hpMethod } = req.body || {}
 
     // Validate pokemonId
     if (!pokemonId || typeof pokemonId !== 'string') {
@@ -138,6 +140,46 @@ async function handleSelectStarter(req, res) {
       })
     }
 
+    // Validate selectedMoves (if provided)
+    const level = 1 // Starters are always level 1
+    let validatedMoves = null
+    if (selectedMoves) {
+      if (!Array.isArray(selectedMoves) || selectedMoves.length === 0 || selectedMoves.length > 4) {
+        return res.status(400).json({
+          success: false,
+          error: 'Must select between 1 and 4 moves',
+        })
+      }
+
+      // Verify each move is valid for this Pokemon at level 1
+      const availableMoves = getAvailableMovesForLevel(pokemon, level)
+      for (const moveId of selectedMoves) {
+        if (!availableMoves.includes(moveId)) {
+          return res.status(400).json({
+            success: false,
+            error: `Invalid move: ${moveId}`,
+          })
+        }
+      }
+      validatedMoves = selectedMoves
+    }
+
+    // Validate hpMethod (if provided)
+    let hpResult = null
+    if (hpMethod) {
+      if (hpMethod !== 'average' && hpMethod !== 'roll') {
+        return res.status(400).json({
+          success: false,
+          error: "HP method must be 'average' or 'roll'",
+        })
+      }
+
+      // Calculate HP
+      const conScore = pokemon.attributes?.con || 10
+      const hitDice = pokemon.hitDice || 'd6'
+      hpResult = calculateHP(hitDice, conScore, level, hpMethod)
+    }
+
     // Check if user already has a starter (using authenticated client)
     const { data: existingPokemon, error: checkError } = await authClient
       .from('player_pokemon')
@@ -160,17 +202,31 @@ async function handleSelectStarter(req, res) {
       })
     }
 
+    // Build insert data
+    const insertData = {
+      user_id: user.id,
+      pokemon_id: pokemonId.toLowerCase(),
+      is_active: true,
+      slot_number: 1,
+      level: 1,
+      nickname: nickname || null,
+    }
+
+    // Add move and HP data if provided
+    if (validatedMoves) {
+      insertData.selected_moves = validatedMoves
+    }
+    if (hpResult) {
+      insertData.current_hp = hpResult.hp
+      insertData.max_hp = hpResult.maxHp
+      insertData.hp_method = hpMethod
+      insertData.hp_rolls = hpResult.rolls
+    }
+
     // Insert new Pokemon as starter (slot 1, active) using authenticated client
     const { data: newPokemon, error: insertError } = await authClient
       .from('player_pokemon')
-      .insert({
-        user_id: user.id,
-        pokemon_id: pokemonId.toLowerCase(),
-        is_active: true,
-        slot_number: 1,
-        level: 1,
-        nickname: nickname || null,
-      })
+      .insert(insertData)
       .select()
       .single()
 

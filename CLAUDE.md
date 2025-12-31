@@ -12,6 +12,7 @@ Auto-generated from all feature plans. Last updated: 2025-12-30
 - Supabase PostgreSQL (new `player_pokemon` table) (004-starter-selection)
 - JavaScript (ES6+), Node.js 18.x+ + Next.js 14.2.0, React 18.2.0, @supabase/supabase-js 2.89.0 (005-pokemon-collection-view)
 - Supabase PostgreSQL (player_pokemon table), Local JSON files (Source/ folder - read-only) (005-pokemon-collection-view)
+- Supabase PostgreSQL (extend existing `player_pokemon` table) (007-pokemon-move-hp-setup)
 
 ## Project Structure
 
@@ -39,9 +40,9 @@ npm run start    # Start production server
 - API routes: kebab-case (e.g., generate-pokemon.js)
 
 ## Recent Changes
+- 007-pokemon-move-hp-setup: Added JavaScript (ES6+), Node.js 18+ + Next.js 14.x, React 18.x, @supabase/supabase-js ^2.89.0
 - 006-move-ability-tooltips: Added JavaScript (ES6+), Node.js 18+ + Next.js 14.x, React 18.x, @supabase/supabase-js ^2.89.0
 - 005-pokemon-collection-view: Added JavaScript (ES6+), Node.js 18.x+ + Next.js 14.2.0, React 18.2.0, @supabase/supabase-js 2.89.0
-- 004-starter-selection: Added JavaScript (ES6+), Node.js 18+ + Next.js 14, React 18, @supabase/supabase-js ^2.89.0
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
